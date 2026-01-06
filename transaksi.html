@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaksi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="https://i.imgur.com/pLK76Th.png">
+
+
+    
+<style>
+
+@media (max-width: 768px) {
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+        width: 100%;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tbody tr {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        background: #fff;
+    }
+
+    tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 6px 0;
+        font-size: 14px;
+        border: none;
+    }
+
+    tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #555;
+        margin-right: 10px;
+        min-width: 120px;
+    }
+
+    tbody td button {
+        width: 100%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+    <img src="https://i.imgur.com/pLK76Th.png" alt="Logo">
+    <h1>LapaqPay</h1>
+</div>
+
+
+    <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <nav class="nav" id="navMenu">
+    <ul>
+        <li><a href="index.html">Beranda</a></li>
+
+    
+        <li class="auth"><a href="transaksi.html">Transaksi</a></li>
+        <li class="auth"><a href="profil.html">Profil</a></li>
+
+        <li id="loginMenu"><a href="login.html">Login</a></li>
+
+        <li id="profileMenu" class="profile-menu">
+            <img src="https://i.imgur.com/pTnA526.png" alt="Profil" id="profileImg">
+          
+    </ul>
+</nav>
+
+</header>
+
+<main>
+
+
+<div class="card">
+    <h2 style="text-align: center;">Data Transaksi</h2>
+
+    <form id="formTransaksi">
+        <label>Nama Pembeli</label>
+        <input type="text" id="pembeli" required>
+
+        <label>Email Pembeli</label>
+        <input type="email" id="email" required>
+
+        
+        <h3 style="margin: 20px 0; text-align: center;">Daftar Barang</h3>
+
+        <div id="barangContainer"></div>
+
+        <button type="button" id="tambahBarang">+ Tambah Barang</button>
+        <button type="submit">Simpan Transaksi</button>
+    </form>
+</div>
+
+
+<div class="card">
+    <h2 style="margin: 20px 0; text-align: center;">Daftar Transaksi</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Waktu</th>
+                <th>Pembeli</th>
+                <th>Email</th>
+                <th>Detail Barang</th>
+                <th>Total</th>
+                <th>Hapus</th>
+            </tr>
+        </thead>
+        <tbody id="daftarTransaksi"></tbody>
+    </table>
+</div>
+
+</main>
+
+<footer>© 2026 LapaqPay Corporation</footer>
+
+<script>
+
+
+
+
+
+const barangContainer = document.getElementById("barangContainer");
+const tambahBtn = document.getElementById("tambahBarang");
+
+function createBarang() {
+    const div = document.createElement("div");
+    div.className = "barang-item";
+    div.innerHTML = `
+
+        <label>Nama Barang</label>
+        <input type="text" class="namaBarang" required>
+
+        <label>Kategori</label>
+        <select class="kategori" required>
+            <option value="">-- Pilih --</option>
+            <option>Elektronik</option>
+            <option>Pakaian</option>
+            <option>Makanan</option>
+            <option>Lainnya</option>
+        </select>
+
+        <label>Jumlah</label>
+        <input type="number" class="jumlah" min="1" required>
+
+        <label>Harga</label>
+        <input type="number" class="harga" min="0" required>
+
+        <button type="button" class="hapusBarang">Hapus Barang</button>
+    `;
+    div.querySelector(".hapusBarang").onclick = () => div.remove();
+    return div;
+}
+
+barangContainer.appendChild(createBarang());
+tambahBtn.onclick = () => barangContainer.appendChild(createBarang());
+
+const form = document.getElementById("formTransaksi");
+const tabel = document.getElementById("daftarTransaksi");
+
+let transaksi = JSON.parse(localStorage.getItem("transaksi")) || [];
+render();
+
+form.addEventListener("submit", e => {
+    e.preventDefault();
+
+    const barangList = [];
+    let total = 0;
+
+    document.querySelectorAll(".barang-item").forEach(item => {
+        const nama = item.querySelector(".namaBarang").value;
+        const kategori = item.querySelector(".kategori").value;
+        const jumlah = Number(item.querySelector(".jumlah").value);
+        const harga = Number(item.querySelector(".harga").value);
+
+        if (nama && kategori && jumlah && harga) {
+            barangList.push({ nama, kategori, jumlah, harga });
+            total += jumlah * harga;
+        }
+    });
+
+    if (barangList.length === 0) {
+        alert("Minimal satu barang harus diisi!");
+        return;
+    }
+
+    transaksi.push({
+        waktu: new Date().toLocaleString("id-ID"),
+        pembeli: pembeli.value,
+        email: email.value,
+        barang: barangList,
+        total
+    });
+
+    localStorage.setItem("transaksi", JSON.stringify(transaksi));
+
+    form.reset();
+    barangContainer.innerHTML = "";
+    barangContainer.appendChild(createBarang());
+    render();
+});
+
+function render() {
+    tabel.innerHTML = "";
+
+    transaksi.forEach((t, i) => {
+
+        if (!Array.isArray(t.barang)) return;
+
+        const detail = t.barang.map(b =>
+            `${b.nama} - ${b.kategori} (${b.jumlah} x Rp ${b.harga.toLocaleString()})`
+        ).join("<br>");
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td data-label="Waktu">${t.waktu}</td>
+            <td data-label="Pembeli">${t.pembeli}</td>
+            <td data-label="Email">${t.email}</td>
+            <td data-label="Detail Barang">${detail}</td>
+            <td data-label="Total"><strong>Rp ${t.total.toLocaleString()}</strong></td>
+            <td data-label="--">
+                <button onclick="hapus(${i})"
+                    style="
+                        background:#dc3545;
+                        border:none;
+                        padding:8px 12px;
+                        border-radius:6px;
+                        cursor:pointer;
+                    ">
+                    <span style="color:white; font-size:16px;">🗑️</span>
+                </button>
+            </td>
+        `;
+
+        tabel.appendChild(row);
+    });
+}
+
+
+
+function hapus(index) {
+    if (confirm("Hapus transaksi ini?")) {
+        transaksi.splice(index, 1);
+        localStorage.setItem("transaksi", JSON.stringify(transaksi));
+        render();
+    }
+}
+
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (!user || user.role !== "admin") {
+    alert("Silakan login sebagai admin!");
+    window.location.href = "login.html";
+}
+
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
