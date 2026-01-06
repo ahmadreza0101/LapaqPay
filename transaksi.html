@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Transaksi</title>
+    <title>Transaksi | LapaqPay</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -36,13 +36,16 @@
         background: #fff;
     }
 
-    tbody td {
+   tbody td {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         padding: 6px 0;
         font-size: 14px;
         border: none;
+        /* Tambahkan dua baris di bawah ini */
+        word-break: break-word; 
+        overflow-wrap: anywhere;
     }
 
     tbody td::before {
@@ -50,7 +53,12 @@
         font-weight: bold;
         color: #555;
         margin-right: 10px;
-        min-width: 120px;
+        min-width: 100px; 
+        flex-shrink: 0;   
+    }
+    
+    tbody td {
+        text-align: right;
     }
 
     tbody td button {
