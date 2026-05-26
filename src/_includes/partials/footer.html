@@ -1,0 +1,22 @@
+<footer>
+    <p>© <span id="tahun-footer">2026</span> LapaqPay Corporation</p>
+</footer>
+
+<script>
+   
+    fetch("https://worldtimeapi.org/api/timezone/Asia/Jakarta")
+        .then(response => {
+            if (!response.ok) throw new Error("Gagal mengambil data waktu server");
+            return response.json();
+        })
+        .then(data => {
+            // Contoh data.datetime: "2026-05-26T20:00:15..." -> ambil 4 digit pertama
+            const tahunServer = data.datetime.substring(0, 4);
+            document.getElementById("tahun-footer").textContent = tahunServer;
+        })
+        .catch(error => {
+            console.error("Error API Waktu:", error);
+            
+            document.getElementById("tahun-footer").textContent = new Date().getFullYear();
+        });
+</script>

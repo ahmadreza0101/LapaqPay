@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Halaman profil Administrator LapaqPay - Tugas Kuliah">
+    <meta name="author" content="Reza Ahmad Al Ghifari">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Profil | LapaqPay</title>
+
+    <link rel="icon" type="image/png" href="https://i.imgur.com/pLK76Th.png">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .profile-wrapper {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .profile-card {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #6366f1;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 12px;
+            border-radius: 12px;
+            margin-top: 4px;
+        }
+
+        .badge.success {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .profile-info table {
+            width: 100%;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .profile-info td {
+            padding: 6px 0;
+        }
+
+        .profile-features ul {
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+
+        /* Tombol Logout custom jika belum ada di style.css */
+        .btn.danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .btn.danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Halaman profil Administrator LapaqPay">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Profil | LapaqPay</title>
+
+    <link rel="icon" type="image/png" href="https://i.imgur.com/pLK76Th.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="https://i.imgur.com/pLK76Th.png" alt="Logo">
+        <h1>LapaqPay</h1>
+    </div>
+
+    <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+    </div>
+
+    <nav class="nav" id="navMenu">
+        <ul>
+            <li><a href="index.html">Beranda</a></li>
+            <li class="auth"><a href="transaksi.html">Transaksi</a></li>
+            <li class="auth"><a href="profil.html">Profil</a></li>
+            <li id="loginMenu"><a href="login.html">Login</a></li>
+            <li id="profileMenu" class="profile-menu">
+                <img src="https://i.imgur.com/pTnA526.png" alt="Profil" id="profileImg">
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="profile-wrapper">
+        <div class="card profile-card">
+            <div class="profile-header">
+                <img src="https://i.imgur.com/pTnA526.png" alt="Admin" class="profile-avatar" id="profil-avatar">
+                <div>
+                    <h3 id="profil-nama-header">Memuat...</h3>
+                    <span class="badge success">Aktif</span>
+                    <p class="role" style="color: gray; font-size: 0.9rem;">Pengguna Lapaqpay</p>
+                </div>
+            </div>
+
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
+            <div class="profile-info">
+                <h3>👤 Informasi User</h3>
+                <table>
+                    <tr><td width="30%">Nama</td><td id="profil-nama">: Memuat...</td></tr>
+                    <tr><td>Email</td><td id="profil-email">: Memuat...</td></tr>
+                    <tr><td>Role</td><td id="profil-role">: Memuat...</td></tr>
+                    <tr><td>Status</td><td>: Aktif</td></tr>
+                </table>
+            </div>
+
+            <div class="profile-about" style="margin-top: 20px;">
+                <h3>❓ Tentang Aplikasi</h3>
+                <p style="font-size: 14px; color: #444; line-height: 1.5;">
+                    Aplikasi LapaqPay digunakan untuk mencatat transaksi penjualan 
+                    secara cepat, aman, dan efisien. Dengan tampilan minimalis, 
+                    kami berfokus pada kemudahan pengguna dalam mengelola data keuangan.
+                </p>
+            </div>
+
+            <div class="profile-features" style="margin-top: 20px;">
+                <h3>📝 Fitur Utama</h3>
+                <ul style="font-size: 14px; color: #444;">
+                    <li>Pencatatan Transaksi Penjualan Real-time</li>
+                    <li>Pengelolaan Riwayat Transaksi Server</li>
+                    <li>Sistem Login Terintegrasi Google</li>
+                </ul>
+            </div>
+
+            <button data-logout class="btn danger">Logout dari Akun</button>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>© 2026 LapaqPay Corporation</p>
+</footer>
+
+<script>
+    // --- SINKRONISASI DATA DARI LOGIN ---
+    const sessionData = localStorage.getItem("user_session");
+    const user = sessionData ? JSON.parse(sessionData) : null;
+
+    // Jika belum login atau bukan admin, tendang ke halaman login
+    if (!user || user.role !== "admin") {
+        alert("Silakan login terlebih dahulu!");
+        window.location.href = "login.html";
+    } else {
+        // --- PROSES MENAMPILKAN DATA DINAMIS KE HTML ---
+        
+        // 1. Ganti Nama
+        document.getElementById("profil-nama-header").textContent = user.name;
+        document.getElementById("profil-nama").textContent = ": " + user.name;
+        
+        // 2. Ganti Email
+        document.getElementById("profil-email").textContent = ": " + user.email;
+        
+        // 3. Ganti Role
+        // Ubah format tulisan 'admin' menjadi 'Admin LapaqPay' agar lebih bagus
+        document.getElementById("profil-role").textContent = ": " + (user.role === 'admin' ? 'User LapaqPay' : user.role);
+        
+        // 4. Ganti Foto Profil (Jika ada foto dari akun Google)
+        if (user.picture) {
+            // Ubah foto besar di profil
+            document.getElementById("profil-avatar").src = user.picture;
+            
+            // Ubah foto kecil di Navbar atas
+            const navProfileImg = document.getElementById("profileImg");
+            if (navProfileImg) {
+                navProfileImg.src = user.picture;
+            }
+        }
+    }
+</script>
+
+<script src="script.js"></script>
+
+</body>
+</html>

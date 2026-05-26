@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mode Guest LapaqPay - Coba fitur tanpa login.">
+    <title>Guest Mode | LapaqPay</title>
+
+    <link rel="icon" type="image/png" href="https://i.imgur.com/pLK76Th.png">
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+        .container { max-width: 900px; margin: 30px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        .barang-item { border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 8px; position: relative; background: #f9f9f9; }
+        .btn-tambah { background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 20px; }
+        .btn-simpan { background: #4f46e5; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #4f46e5; color: white; }
+        
+        .guest-badge {
+            background-color: #eab308;
+            color: white;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            vertical-align: middle;
+            font-weight: bold;
+        }
+
+        .alert-guest {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            color: #92400e;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr { display: block; width: 100%; }
+            thead { display: none; }
+            tbody tr { margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: #fff; }
+            tbody td { display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 0; font-size: 14px; border: none; border-bottom: 1px solid #eee;}
+            tbody td::before { content: attr(data-label); font-weight: bold; width: 40%; text-align: left; color: #4f46e5; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="https://i.imgur.com/pLK76Th.png" alt="LapaqPay">
+        <h1>LapaqPay <span class="guest-badge">GUEST MODE</span></h1>
+    </div>
+    <nav class="nav" id="navMenu">
+        <ul>
+    <li><a href="/">Beranda</a></li>
+    <li><a href="/login/" style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 8px;">Login Admin</a></li>
+</ul>
+    </nav>
+</header>
+
+<main class="container">
+    <div class="alert-guest">
+        <strong>⚠️ Perhatian:</strong> Anda sedang berada di Mode Guest (Tamu). Data transaksi yang Anda masukkan di sini hanya disimpan secara lokal di browser Anda (LocalStorage) dan tidak akan tersimpan ke server database.
+    </div>
+
+    <h2>Catat Transaksi (Mode Tamu)</h2>
+    <p>Halo, <span style="font-weight:bold; color:#4f46e5;">Pengguna Tamu</span>. Silakan coba input transaksi.</p>
+    
+    <form id="formTransaksiGuest" style="margin-top: 20px;">
+        <div class="form-group">
+            <label>Nama Pembeli</label>
+            <input type="text" id="pembeli" required placeholder="Masukkan nama pembeli">
+        </div>
+        <div class="form-group">
+            <label>Email Pembeli (Opsional)</label>
+            <input type="email" id="emailPembeli" placeholder="email.pembeli@gmail.com">
+        </div>
+
+        <div id="barangContainer">
+    <div class="barang-item">
+        <div class="form-group"><label>Nama Barang</label><input type="text" class="namaBarang" required></div>
+        <div class="form-group"><label>Kategori</label>
+            <select class="kategori" required>
+                <option value="">-- Pilih --</option>
+                <option value="Elektronik">Elektronik</option>
+                <option value="Pakaian">Pakaian</option>
+                <option value="Makanan">Makanan</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Jumlah</label><input type="number" class="jumlah" min="1" required></div>
+        <div class="form-group"><label>Harga Satuan (Rp)</label><input type="number" class="harga" min="1" required></div>
+        <button type="button" onclick="this.parentElement.remove()" style="background:#ef4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Hapus Item</button>
+    </div>
+</div>
+        
+        <button type="button" class="btn-tambah" onclick="tambahBarang()">+ Tambah Barang Lain</button>
+        <button type="submit" class="btn-simpan" id="submitBtn">Simpan Transaksi Lokal</button>
+    </form>
+
+    <h2 style="margin-top: 40px;">Riwayat Transaksi Tamu</h2>
+    <p style="font-size: 0.9em; color: gray;">Data ini diambil dari LocalStorage Browser Anda.</p>
+    
+    <table id="tabelTransaksi">
+        <thead>
+            <tr>
+                <th>Waktu</th>
+                <th>Pembeli</th>
+                <th>Email</th>
+                <th>Detail Barang</th>
+                <th>Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="tabelBody">
+    <tr id="row-placeholder"><td colspan="6" style="text-align:center; color:gray;">Memuat data...</td></tr>
+</tbody>
+    </table>
+</main>
+
+<script>
+    // --- 1. KEY UNTUK LOCALSTORAGE ---
+    const STORAGE_KEY = "guest_transactions";
+
+    // --- 2. LOGIKA FORM BARANG DINAMIS ---
+    const barangContainer = document.getElementById("barangContainer");
+    
+    function tambahBarang() {
+        const div = document.createElement("div");
+        div.className = "barang-item";
+        div.innerHTML = `
+            <div class="form-group"><label>Nama Barang</label><input type="text" class="namaBarang" required></div>
+            <div class="form-group"><label>Kategori</label>
+                <select class="kategori" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="Elektronik">Elektronik</option>
+                    <option value="Pakaian">Pakaian</option>
+                    <option value="Makanan">Makanan</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Jumlah</label><input type="number" class="jumlah" min="1" required></div>
+            <div class="form-group"><label>Harga Satuan (Rp)</label><input type="number" class="harga" min="1" required></div>
+            <button type="button" onclick="this.parentElement.remove()" style="background:#ef4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Hapus Item</button>
+        `;
+        barangContainer.appendChild(div);
+    }
+    
+
+    // --- 3. [READ] LOGIKA TARIK DATA DARI LOCALSTORAGE ---
+    function muatDataGuest() {
+        const tbody = document.getElementById("tabelBody");
+        tbody.innerHTML = "";
+        
+        // Ambil data dari LocalStorage
+        const dataStorage = localStorage.getItem(STORAGE_KEY);
+        let transactions = dataStorage ? JSON.parse(dataStorage) : [];
+
+        if (transactions.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:gray;">Belum ada transaksi di mode guest.</td></tr>`;
+            return;
+        }
+
+        // Tampilkan dari yang terbaru (reverse)
+        transactions.reverse().forEach(t => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td data-label="Waktu">${t.waktu}</td>
+                <td data-label="Pembeli">${t.pembeli}</td>
+                <td data-label="Email">${t.email_pembeli || '-'}</td>
+                <td data-label="Detail Barang">${t.detail}</td>
+                <td data-label="Total"><strong>Rp ${Number(t.total).toLocaleString("id-ID")}</strong></td>
+                <td data-label="Aksi">
+                    <button onclick="hapusTransaksiGuest('${t.id_transaksi}')" style="background:#ef4444; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%;">Hapus</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Panggil saat halaman dimuat
+    muatDataGuest();
+
+    // --- 4. [CREATE] LOGIKA SIMPAN TRANSAKSI KE LOCALSTORAGE ---
+    document.getElementById("formTransaksiGuest").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        let barangList = [];
+        let totalSeluruh = 0;
+
+        document.querySelectorAll(".barang-item").forEach(item => {
+            const nama = item.querySelector(".namaBarang").value;
+            const jumlah = Number(item.querySelector(".jumlah").value);
+            const harga = Number(item.querySelector(".harga").value);
+            if (nama && jumlah && harga) {
+                barangList.push(`${nama} (${jumlah}x)`);
+                totalSeluruh += (jumlah * harga);
+            }
+        });
+
+        // Buat objek transaksi baru
+        const transaksiBaru = {
+            id_transaksi: "GUEST-TRX-" + new Date().getTime(),
+            waktu: new Date().toLocaleString("id-ID"),
+            pembeli: document.getElementById("pembeli").value,
+            email_pembeli: document.getElementById("emailPembeli").value,
+            detail: barangList.join(", "),
+            total: totalSeluruh
+        };
+
+        // Ambil data lama, tambahkan yang baru, lalu simpan lagi
+        const dataStorage = localStorage.getItem(STORAGE_KEY);
+        let transactions = dataStorage ? JSON.parse(dataStorage) : [];
+        transactions.push(transaksiBaru);
+        
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+
+        alert("Transaksi berhasil disimpan secara lokal!");
+        this.reset();
+        barangContainer.innerHTML = "";
+        tambahBarang(); // Kembalikan 1 form barang kosong
+        muatDataGuest(); // Segarkan tabel
+    });
+
+    // --- 5. [DELETE] FUNGSI HAPUS TRANSAKSI DARI LOCALSTORAGE ---
+    function hapusTransaksiGuest(idTransaksi) {
+        if (!confirm("Hapus transaksi uji coba ini?")) return;
+
+        const dataStorage = localStorage.getItem(STORAGE_KEY);
+        if (dataStorage) {
+            let transactions = JSON.parse(dataStorage);
+            // Filter array dengan mengabaikan transaksi yang ID-nya cocok
+            transactions = transactions.filter(t => t.id_transaksi !== idTransaksi);
+            
+            // Simpan kembali array yang sudah diperbarui
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+            muatDataGuest(); // Segarkan tabel
+        }
+    }
+</script>
+
+</body>
+</html>

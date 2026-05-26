@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Halaman transaksi LapaqPay - Aplikasi pencatatan keuangan tugas kuliah.">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Transaksi | LapaqPay</title>
+
+    <link rel="icon" type="image/png" href="https://i.imgur.com/pLK76Th.png">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* Gaya tambahan khusus form transaksi */
+        .container { max-width: 900px; margin: 30px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        .barang-item { border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 8px; position: relative; background: #f9f9f9; }
+        .btn-tambah { background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 20px; }
+        .btn-simpan { background: #4f46e5; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; }
+        .btn-simpan:disabled { background: #9ca3af; cursor: not-allowed; }
+        
+        /* Tabel Responsif */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #4f46e5; color: white; }
+        #loading-text { text-align: center; font-style: italic; color: #6b7280; margin-top: 20px; }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr { display: block; width: 100%; }
+            thead { display: none; }
+            tbody tr { margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: #fff; }
+            tbody td { display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 0; font-size: 14px; border: none; border-bottom: 1px solid #eee;}
+            tbody td::before { content: attr(data-label); font-weight: bold; width: 40%; text-align: left; color: #4f46e5; }
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    // Dibungkus dalam fungsi anonim (IIFE) agar variabelnya tidak bocor 
+    // dan tidak bentrok dengan transaksi.html / profil.html
+    (function() {
+        const session = localStorage.getItem("user_session");
+        const userData = session ? JSON.parse(session) : null;
+        
+        if (userData && userData.role === "admin") {
+            document.documentElement.classList.add("is-logged-in");
+        } else {
+            document.documentElement.classList.add("is-logged-out");
+        }
+    })();
+</script>
+
+<header class="header">
+    <div class="logo">
+        <img src="https://i.imgur.com/pLK76Th.png" alt="Logo">
+        <h1>LapaqPay</h1>
+    </div>
+
+    <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+    </div>
+
+    <nav class="nav" id="navMenu">
+        <ul>
+            <li><a href="/">Beranda</a></li>
+            <li class="auth"><a href="/transaksi/">Transaksi</a></li>
+            <li class="auth"><a href="/profil/">Profil</a></li>
+            
+            <li id="loginMenu"><a href="/login/">Login</a></li>
+            
+            <li id="profileMenu" class="profile-menu">
+                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239ca3af'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-3.33-8-33z'/></svg>" alt="Profil" id="profileImg">
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+
+<main class="container">
+    <h2>Catat Transaksi Baru</h2>
+    <p>Halo, <span id="nama-kasir" style="font-weight:bold; color:#4f46e5;"></span>. Silakan input transaksi.</p>
+    
+    <form id="formTransaksi" style="margin-top: 20px;">
+        <div class="form-group">
+            <label>Nama Pembeli</label>
+            <input type="text" id="pembeli" required placeholder="Masukkan nama pembeli">
+        </div>
+        <div class="form-group">
+            <label>Email Pembeli (Opsional untuk struk)</label>
+            <input type="email" id="emailPembeli" placeholder="email.pembeli@gmail.com">
+        </div>
+
+        <div id="barangContainer">
+            </div>
+        
+        <button type="button" class="btn-tambah" onclick="tambahBarang()">+ Tambah Barang Lain</button>
+        <button type="submit" class="btn-simpan" id="submitBtn">Simpan Transaksi</button>
+    </form>
+
+    <h2 style="margin-top: 40px;">Riwayat Transaksi</h2>
+    <p style="font-size: 0.9em; color: gray;">Diambil langsung secara real-time dari database.</p>
+    
+    <div id="loading-text">Sedang memuat data dari server...</div>
+    <table id="tabelTransaksi" style="display: none;">
+        <thead>
+            <tr>
+                <th>Waktu</th>
+                <th>Pembeli</th>
+                <th>Email Pembeli</th>
+                <th>Detail Barang</th>
+                <th>Total</th>
+                <th>Aksi</th> </tr>
+        </thead>
+        <tbody id="tabelBody"></tbody>
+    </table>
+</main>
+
+<footer>
+    <p>© <span id="tahun-footer">2026</span> LapaqPay Corporation</p>
+</footer>
+
+<script>
+   
+    fetch("https://worldtimeapi.org/api/timezone/Asia/Jakarta")
+        .then(response => {
+            if (!response.ok) throw new Error("Gagal mengambil data waktu server");
+            return response.json();
+        })
+        .then(data => {
+            // Contoh data.datetime: "2026-05-26T20:00:15..." -> ambil 4 digit pertama
+            const tahunServer = data.datetime.substring(0, 4);
+            document.getElementById("tahun-footer").textContent = tahunServer;
+        })
+        .catch(error => {
+            console.error("Error API Waktu:", error);
+            
+            document.getElementById("tahun-footer").textContent = new Date().getFullYear();
+        });
+</script>
+
+<script>
+    // --- 1. PROTEKSI HALAMAN & AMBIL DATA SESI ---
+    const sessionData = localStorage.getItem("user_session");
+    if (!sessionData) {
+        alert("Anda belum login!");
+        window.location.href = "login.html";
+    }
+    
+    const user = JSON.parse(sessionData);
+    document.getElementById("nama-kasir").textContent = user.name;
+    const emailKasirAsli = user.email;
+
+    // DEVELOPER: MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI BAWAH INI
+    const gasUrl = "https://script.google.com/macros/s/AKfycbxC2mWgmiD6oHLC_0k-5E4F8XONDaTd9WhTgyVdRXe9jgKWfLY0forBEsX-2tJ1IC3Tdw/exec";
+
+    // --- 2. LOGIKA FORM BARANG DINAMIS ---
+    const barangContainer = document.getElementById("barangContainer");
+    
+    function tambahBarang() {
+        const div = document.createElement("div");
+        div.className = "barang-item";
+        div.innerHTML = `
+            <div class="form-group"><label>Nama Barang</label><input type="text" class="namaBarang" required></div>
+            <div class="form-group"><label>Kategori</label>
+                <select class="kategori" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="Elektronik">Elektronik</option>
+                    <option value="Pakaian">Pakaian</option>
+                    <option value="Makanan">Makanan</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Jumlah</label><input type="number" class="jumlah" min="1" required></div>
+            <div class="form-group"><label>Harga Satuan (Rp)</label><input type="number" class="harga" min="1" required></div>
+            <button type="button" onclick="this.parentElement.remove()" style="background:#ef4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Hapus Item</button>
+        `;
+        barangContainer.appendChild(div);
+    }
+    tambahBarang(); 
+
+    // --- 3. [READ] LOGIKA TARIK DATA DARI GOOGLE SHEETS ---
+    function muatDataTransaksi() {
+        const tabel = document.getElementById("tabelTransaksi");
+        const tbody = document.getElementById("tabelBody");
+        const loading = document.getElementById("loading-text");
+        loading.style.display = "block";
+        tabel.style.display = "none";
+
+        fetch(gasUrl)
+            .then(res => res.json())
+            .then(data => {
+                tbody.innerHTML = "";
+                data.reverse().forEach(t => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td data-label="Waktu">${t.waktu}</td>
+                        <td data-label="Pembeli">${t.pembeli}</td>
+                        <td data-label="Email Pembeli">${t.email_pembeli || '-'}</td>
+                        <td data-label="Detail Barang">${t.detail}</td>
+                        <td data-label="Total"><strong>Rp ${Number(t.total).toLocaleString("id-ID")}</strong></td>
+                        <td data-label="Aksi">
+                            <button onclick="hapusTransaksi('${t.id_transaksi}')" style="background:#ef4444; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; width:100%;">Hapus</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                loading.style.display = "none";
+                tabel.style.display = "table";
+            })
+            .catch(err => console.error(err));
+    }
+    muatDataTransaksi();
+
+    // --- 4. [CREATE] LOGIKA SIMPAN TRANSAKSI KE GOOGLE SHEETS ---
+    document.getElementById("formTransaksi").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        let barangList = [];
+        let totalSeluruh = 0;
+
+        document.querySelectorAll(".barang-item").forEach(item => {
+            const nama = item.querySelector(".namaBarang").value;
+            const jumlah = Number(item.querySelector(".jumlah").value);
+            const harga = Number(item.querySelector(".harga").value);
+            if (nama && jumlah && harga) {
+                barangList.push(`${nama} (${jumlah}x)`);
+                totalSeluruh += (jumlah * harga);
+            }
+        });
+
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.textContent = "Mengirim Data...";
+        submitBtn.disabled = true;
+
+        // Bikin ID Unik (Gabungan kata TRX dan waktu milidetik)
+        const generateID = "TRX-" + new Date().getTime(); 
+
+        const payload = {
+            action: "simpan_transaksi",
+            id_transaksi: generateID, // Kirim ID ke backend
+            waktu: new Date().toLocaleString("id-ID"),
+            pembeli: document.getElementById("pembeli").value,
+            email_pembeli: document.getElementById("emailPembeli").value,
+            email_kasir: emailKasirAsli,
+            detail: barangList.join(", "),
+            total: totalSeluruh
+        };
+
+        fetch(gasUrl, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert("Transaksi Berhasil!");
+                this.reset();
+                barangContainer.innerHTML = "";
+                tambahBarang();
+                muatDataTransaksi(); // Segarkan tabel
+            }
+        })
+        .finally(() => {
+            submitBtn.textContent = "Simpan Transaksi";
+            submitBtn.disabled = false;
+        });
+    });
+
+    // --- 5. [DELETE] FUNGSI HAPUS TRANSAKSI ---
+    function hapusTransaksi(idTransaksi) {
+        if (!confirm("Apakah Anda yakin ingin menghapus transaksi ini? Data di server juga akan hilang.")) return;
+
+        // Ubah tampilan saat loading hapus
+        document.getElementById("loading-text").style.display = "block";
+        document.getElementById("loading-text").textContent = "Sedang menghapus data...";
+        document.getElementById("tabelTransaksi").style.display = "none";
+
+        const payload = {
+            action: "hapus_transaksi",
+            id_transaksi: idTransaksi
+        };
+
+        fetch(gasUrl, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                muatDataTransaksi(); // Tarik data terbaru setelah dihapus
+            } else {
+                alert("Gagal menghapus: " + data.message);
+                muatDataTransaksi();
+            }
+        });
+    }
+
+    // --- 6. [UPDATE] FUNGSI EDIT TRANSAKSI ---
+    function editTransaksi(idTransaksi, namaPembeli) {
+        // Karena form memiliki array dinamis yang kompleks, praktik aplikasi POS standar (seperti Moka/Pawoon) 
+        // adalah melakukan "Void" (Hapus) transaksi lama, lalu membuat transaksi baru.
+        const mauEdit = confirm(`Untuk mengubah transaksi atas nama ${namaPembeli}, transaksi lama akan dihapus agar Anda bisa menginput ulang. Lanjutkan?`);
+        
+        if (mauEdit) {
+            document.getElementById("pembeli").value = namaPembeli;
+            hapusTransaksi(idTransaksi);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+</script>
+
+<script src="/script.js"></script>
+
+</body>
+</html>

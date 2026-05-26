@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LapaqPay | Catat Transaksi</title>
+    <meta name="description" content="Halaman utama LapaqPay - Aplikasi pencatatan keuangan tugas kuliah.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="icon" type="image/png" href="https://i.imgur.com/pLK76Th.png">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+{% include "partials/header.html" %}
+
+<main>
+    <div class="card">
+        <h2>Selamat Datang 🎉</h2>
+        <p>
+            Website LapaqPay membantu admin sebuah toko dalam mengelola transaksi penjualan
+            secara cepat, rapi, dan efisien.
+        </p>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="line-height: 2.0;">Cara Login</h3>
+        <ol style="text-align: left; padding-left: 40px; display: inline-block; line-height: 2.0;">
+            <li>Klik tombol Login yang terletak di pojok kanan atas menu navigasi utama.</li>
+            <li>Masuk menggunakan akun Google Anda pada panel yang tersedia.</li>
+            <li>Tunggu verifikasi sistem hingga muncul notifikasi sukses.</li>
+            <li>Anda akan diarahkan kembali ke halaman utama dengan fitur yang sudah terbuka.</li>
+        </ol>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="line-height: 2.0;">Cara Mencatat Transaksi</h3>
+        <ol style="text-align: left; padding-left: 40px; display: inline-block; line-height: 2.0;">
+            <li>Klik tombol transaksi yang terletak di bagian atas menu navigasi utama.</li>
+            <li>Masukkan data yang diminta di form transaksi sesuai keinginan.</li>
+            <li>Jika sudah, tekan tombol simpan untuk menyimpan transaksi.</li>
+            <li>Lihat daftar transaksi untuk melihat riwayat transaksi secara real-time.</li>
+            <li>Tekan tombol hapus jika ingin menghapus transaksi dari server pusat.</li>
+        </ol>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="line-height: 2.0;">Cara Logout</h3>
+        <ol style="text-align: left; padding-left: 40px; display: inline-block; line-height: 2.0;">
+            <li>Klik tombol profil yang terletak di bagian atas menu navigasi utama.</li>
+            <li>Tekan tombol logout yang ada di bagian bawah kartu profil.</li>
+            <li>Jika muncul keterangan konfirmasi, tekan OK.</li>
+            <li>Tunggu hingga proses logout selesai dan sistem mengunci kembali menu navigasi.</li>
+        </ol>
+    </div>
+</main>
+
+{% include "partials/footer.html" %}
+
+
+
+
+
+<script src="/script.js"></script>
+
+</body>
+</html>

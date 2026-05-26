@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Halaman login sistem pencatatan transaksi LapaqPay - Tugas Kuliah">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Login | LapaqPay Catat Transaksi</title>
+    
+    <link rel="icon" type="image/png" href="https://i.imgur.com/pLK76Th.png">
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        /* Base Reset & Styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 35px;
+            height: auto;
+        }
+
+        .logo h1 {
+            font-size: 1.35rem;
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        nav ul li a:hover {
+            color: #4f46e5;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .card h2 {
+            margin-bottom: 8px;
+            font-size: 1.6rem;
+            color: #111827;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        /* Container Tombol Google Auth */
+        .google-btn-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            min-height: 44px;
+        }
+
+        #error-msg {
+            font-size: 0.85rem;
+            margin-top: 20px;
+            font-weight: 600;
+            min-height: 20px;
+            transition: color 0.3s ease;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            border-top: 1px solid #e5e7eb;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="https://i.imgur.com/pLK76Th.png" alt="Logo">
+        <h1>LapaqPay</h1>
+    </div>
+
+    <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+    </div>
+
+    <nav class="nav" id="navMenu">
+        <ul>
+            <li><a href="index.html">Beranda</a></li>
+            <li id="loginMenu"><a href="login.html">Login</a></li>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <div class="card">
+        <h2>Selamat Datang</h2>
+        <p class="subtitle">Silakan masuk menggunakan akun Google</p>
+
+        <div id="g_id_onload"
+             data-client_id="309716292811-3ghcgorihclbvv1qrn5nvnjrkdnbdadu.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        
+        <div class="google-btn-container">
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-size="large"
+                 data-theme="outline"
+                 data-text="sign_in_with"
+                 data-shape="rectangular"
+                 data-logo_alignment="left">
+            </div>
+        </div>
+
+        <p id="error-msg"></p>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2026 LapaqPay Corporation | Tugas Pengembangan Web</p>
+</footer>
+
+<script>
+    // Sistem Proteksi Awal: Jika sudah ada sesi aktif, langsung alihkan ke Beranda
+    if (localStorage.getItem("user_session")) {
+        window.location.href = "index.html";
+    }
+
+    // Fungsi utilitas untuk membaca data enkripsi token JWT dari Google
+    function decodeJwtResponse(token) {
+        try {
+            let base64Url = token.split('.')[1];
+            let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (error) {
+            console.error("Gagal mendecode JWT:", error);
+            return null;
+        }
+    }
+
+    // Callback otomatis yang dipicu setelah user sukses memilih akun Google
+    function handleCredentialResponse(response) {
+        const responsePayload = decodeJwtResponse(response.credential);
+        
+        if (!responsePayload) {
+            document.getElementById("error-msg").style.color = "#ef4444";
+            document.getElementById("error-msg").textContent = "Gagal memproses kredensial login.";
+            return;
+        }
+
+        const userEmail = responsePayload.email;
+        const userName = responsePayload.name;
+        const userPicture = responsePayload.picture;
+        
+        const errorMsg = document.getElementById("error-msg");
+        errorMsg.style.color = "#4f46e5"; // Status loading berwarna biru/ungu
+        errorMsg.textContent = "Memverifikasi hak akses ke server database...";
+
+        // PENTING: Ganti GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_ANDA dengan URL hasil deploy Apps Script kamu
+        const gasUrl = "https://script.google.com/macros/s/AKfycbxC2mWgmiD6oHLC_0k-5E4F8XONDaTd9WhTgyVdRXe9jgKWfLY0forBEsX-2tJ1IC3Tdw/exec";
+
+        // Menyiapkan paket data untuk dikirim ke Backend Google Apps Script
+        const payload = {
+            action: "login_google",
+            email: userEmail,
+            name: userName
+        };
+
+        // Mengirim data menggunakan Fetch API dengan metode POST
+        fetch(gasUrl, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, // Menggunakan text/plain untuk bypass CORS
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Respon server bermasalah");
+            return res.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                // Jika email divalidasi oleh Apps Script sebagai administrator
+                const sessionData = {
+                    id: responsePayload.sub,
+                    email: userEmail,
+                    name: userName,
+                    picture: userPicture, // Menyimpan foto profil Google untuk halaman profil.html
+                    role: data.role,
+                    loginTime: new Date().getTime()
+                };
+                
+                // Menyimpan status login secara lokal di browser
+                localStorage.setItem("user_session", JSON.stringify(sessionData));
+
+                alert(data.message);
+                window.location.href = "index.html";
+            } else {
+                // Jika email ditolak oleh server Apps Script
+                errorMsg.style.color = "#ef4444"; // Status error berwarna merah
+                errorMsg.textContent = data.message;
+            }
+        })
+        .catch(error => {
+            errorMsg.style.color = "#ef4444";
+            errorMsg.textContent = "Gagal terhubung ke server database. Periksa koneksi internet.";
+            console.error("Fetch Error:", error);
+        });
+    }
+</script>
+
+</body>
+</html>

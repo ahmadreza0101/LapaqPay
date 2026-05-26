@@ -1,0 +1,40 @@
+<script>
+    // Dibungkus dalam fungsi anonim (IIFE) agar variabelnya tidak bocor 
+    // dan tidak bentrok dengan transaksi.html / profil.html
+    (function() {
+        const session = localStorage.getItem("user_session");
+        const userData = session ? JSON.parse(session) : null;
+        
+        if (userData && userData.role === "admin") {
+            document.documentElement.classList.add("is-logged-in");
+        } else {
+            document.documentElement.classList.add("is-logged-out");
+        }
+    })();
+</script>
+
+<header class="header">
+    <div class="logo">
+        <img src="https://i.imgur.com/pLK76Th.png" alt="Logo">
+        <h1>LapaqPay</h1>
+    </div>
+
+    <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+    </div>
+
+    <nav class="nav" id="navMenu">
+        <ul>
+            <li><a href="/">Beranda</a></li>
+            <li class="auth"><a href="/transaksi/">Transaksi</a></li>
+            <li class="auth"><a href="/profil/">Profil</a></li>
+            
+            <li id="loginMenu"><a href="/login/">Login</a></li>
+            
+            <li id="profileMenu" class="profile-menu">
+                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239ca3af'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-3.33-8-33z'/></svg>" alt="Profil" id="profileImg">
+            </li>
+        </ul>
+    </nav>
+</header>
+

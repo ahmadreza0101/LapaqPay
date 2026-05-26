@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Halaman login sistem pencatatan transaksi LapaqPay">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Login | LapaqPay Catat Transaksi</title>
+    
+    <link rel="icon" type="image/png" href="https://i.imgur.com/pLK76Th.png">
+    <link rel="stylesheet" href="/style.css">
+    
+    <style>
+        .login-wrapper {
+            flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px;
+        }
+        .login-card {
+            background: #ffffff; width: 100%; max-width: 400px; padding: 40px 35px;
+            border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); text-align: center;
+        }
+        .login-card h2 { margin-bottom: 8px; font-size: 1.6rem; color: #111827; }
+        .subtitle { font-size: 0.9rem; color: #6b7280; margin-bottom: 30px; }
+        
+        .google-btn-container { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            margin: 20px 0; 
+            height: 40px; 
+            overflow: hidden;
+        }
+        
+        #error-msg { font-size: 0.85rem; margin-top: 20px; font-weight: 600; min-height: 20px; }
+
+        .login-logo {
+    width: 70px;
+    
+    /* KUNCI ANTI-CLS: Memesan ruang gambar sejak awal sesuai rasio 2:3 */
+    aspect-ratio: 2 / 3; 
+    object-fit: contain; /* Memastikan logo tetap proporsional di dalam ruang tersebut */
+    
+    margin-bottom: 15px;
+    filter: brightness(0); 
+}
+        .login-info {
+            background-color: #f8fafc;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        .info-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        .login-info ul {
+            font-size: 0.8rem;
+            color: #6b7280;
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+        .login-divider {
+            border: 0;
+            border-top: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    // Dibungkus dalam fungsi anonim (IIFE) agar variabelnya tidak bocor 
+    // dan tidak bentrok dengan transaksi.html / profil.html
+    (function() {
+        const session = localStorage.getItem("user_session");
+        const userData = session ? JSON.parse(session) : null;
+        
+        if (userData && userData.role === "admin") {
+            document.documentElement.classList.add("is-logged-in");
+        } else {
+            document.documentElement.classList.add("is-logged-out");
+        }
+    })();
+</script>
+
+<header class="header">
+    <div class="logo">
+        <img src="https://i.imgur.com/pLK76Th.png" alt="Logo">
+        <h1>LapaqPay</h1>
+    </div>
+
+    <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+    </div>
+
+    <nav class="nav" id="navMenu">
+        <ul>
+            <li><a href="/">Beranda</a></li>
+            <li class="auth"><a href="/transaksi/">Transaksi</a></li>
+            <li class="auth"><a href="/profil/">Profil</a></li>
+            
+            <li id="loginMenu"><a href="/login/">Login</a></li>
+            
+            <li id="profileMenu" class="profile-menu">
+                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239ca3af'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-3.33-8-33z'/></svg>" alt="Profil" id="profileImg">
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+
+<main class="login-wrapper">
+    <div class="login-card">
+        <img src="https://i.imgur.com/pLK76Th.png" alt="Logo LapaqPay" class="login-logo">
+        
+        <h2>Portal LapaqPay</h2>
+        <p class="subtitle">Sistem Pencatatan Transaksi Penjualan</p>
+
+        <div class="login-info">
+            <p class="info-title">🔒 Akses Sistem Terbatas</p>
+            <ul>
+                <li>Hanya untuk pencatatan transaksi.</li>
+                <li>Gunakan akun Google untuk login.</li>
+                <li>Aktivitas login Anda dicatat oleh server.</li>
+            </ul>
+        </div>
+
+        <hr class="login-divider">
+
+        <p style="font-size: 0.85rem; color: #4b5563; margin-bottom: 15px;">Silakan verifikasi identitas Anda:</p>
+
+        <div class="google-btn-container" id="googleButtonDiv"></div>
+
+        <div style="margin-top: 15px;">
+            <p style="font-size: 0.8rem; color: #6b7280; margin-bottom: 10px;">Ingin mencoba fitur aplikasi?</p>
+            <a href="/guest/" style="display: inline-block; padding: 10px 20px; background-color: #f3f4f6; color: #374151; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; border: 1px solid #d1d5db; transition: 0.3s;">
+            👀 Coba Mode Guest
+            </a>
+        </div>
+        <p id="error-msg"></p>
+    </div>
+</main>
+
+<footer>
+    <p>© <span id="tahun-footer">2026</span> LapaqPay Corporation</p>
+</footer>
+
+<script>
+   
+    fetch("https://worldtimeapi.org/api/timezone/Asia/Jakarta")
+        .then(response => {
+            if (!response.ok) throw new Error("Gagal mengambil data waktu server");
+            return response.json();
+        })
+        .then(data => {
+            // Contoh data.datetime: "2026-05-26T20:00:15..." -> ambil 4 digit pertama
+            const tahunServer = data.datetime.substring(0, 4);
+            document.getElementById("tahun-footer").textContent = tahunServer;
+        })
+        .catch(error => {
+            console.error("Error API Waktu:", error);
+            
+            document.getElementById("tahun-footer").textContent = new Date().getFullYear();
+        });
+</script>
+
+<script>
+    if (localStorage.getItem("user_session")) {
+        window.location.href = "/";
+    }
+
+    function initGoogleButton() {
+        if (typeof google !== 'undefined') {
+            google.accounts.id.initialize({
+                client_id: "309716292811-3ghcgorihclbvv1qrn5nvnjrkdnbdadu.apps.googleusercontent.com",
+                callback: handleCredentialResponse
+            });
+            
+            google.accounts.id.renderButton(
+                document.getElementById("googleButtonDiv"),
+                { theme: "outline", size: "large", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" }
+            );
+        }
+    }
+
+    function decodeJwtResponse(token) {
+        try {
+            let base64Url = token.split('.')[1];
+            let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (error) { return null; }
+    }
+
+    function handleCredentialResponse(response) {
+        const responsePayload = decodeJwtResponse(response.credential);
+        const errorMsg = document.getElementById("error-msg");
+        
+        if (!responsePayload) {
+            errorMsg.style.color = "#ef4444";
+            errorMsg.textContent = "Gagal memproses kredensial login.";
+            return;
+        }
+
+        errorMsg.style.color = "#4f46e5"; 
+        errorMsg.textContent = "Memverifikasi hak akses ke server database...";
+
+        const gasUrl = "https://script.google.com/macros/s/AKfycbxC2mWgmiD6oHLC_0k-5E4F8XONDaTd9WhTgyVdRXe9jgKWfLY0forBEsX-2tJ1IC3Tdw/exec";
+        const payload = { action: "login_google", email: responsePayload.email, name: responsePayload.name };
+
+        fetch(gasUrl, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                const sessionData = {
+                    id: responsePayload.sub, email: responsePayload.email, name: responsePayload.name,
+                    picture: responsePayload.picture, role: data.role, loginTime: new Date().getTime()
+                };
+                localStorage.setItem("user_session", JSON.stringify(sessionData));
+                alert(data.message);
+                
+                window.location.href = "/";
+            } else {
+                errorMsg.style.color = "#ef4444"; errorMsg.textContent = data.message;
+            }
+        })
+        .catch(error => {
+            errorMsg.style.color = "#ef4444"; errorMsg.textContent = "Gagal terhubung ke server database.";
+        });
+    }
+</script>
+
+<script src="/script.js"></script>
+
+<script src="https://accounts.google.com/gsi/client" onload="initGoogleButton()" async defer></script>
+
+</body>
+</html>

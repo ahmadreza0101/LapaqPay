@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LapaqPay | Catat Transaksi</title>
+    <meta name="description" content="Halaman utama LapaqPay - Aplikasi pencatatan keuangan tugas kuliah.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="icon" type="image/png" href="https://i.imgur.com/pLK76Th.png">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<script>
+    // Dibungkus dalam fungsi anonim (IIFE) agar variabelnya tidak bocor 
+    // dan tidak bentrok dengan transaksi.html / profil.html
+    (function() {
+        const session = localStorage.getItem("user_session");
+        const userData = session ? JSON.parse(session) : null;
+        
+        if (userData && userData.role === "admin") {
+            document.documentElement.classList.add("is-logged-in");
+        } else {
+            document.documentElement.classList.add("is-logged-out");
+        }
+    })();
+</script>
+
+<header class="header">
+    <div class="logo">
+        <img src="https://i.imgur.com/pLK76Th.png" alt="Logo">
+        <h1>LapaqPay</h1>
+    </div>
+
+    <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+    </div>
+
+    <nav class="nav" id="navMenu">
+        <ul>
+            <li><a href="/">Beranda</a></li>
+            <li class="auth"><a href="/transaksi/">Transaksi</a></li>
+            <li class="auth"><a href="/profil/">Profil</a></li>
+            
+            <li id="loginMenu"><a href="/login/">Login</a></li>
+            
+            <li id="profileMenu" class="profile-menu">
+                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239ca3af'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-3.33-8-33z'/></svg>" alt="Profil" id="profileImg">
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+
+<main>
+    <div class="card">
+        <h2>Selamat Datang 🎉</h2>
+        <p>
+            Website LapaqPay membantu admin sebuah toko dalam mengelola transaksi penjualan
+            secara cepat, rapi, dan efisien.
+        </p>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="line-height: 2.0;">Cara Login</h3>
+        <ol style="text-align: left; padding-left: 40px; display: inline-block; line-height: 2.0;">
+            <li>Klik tombol Login yang terletak di pojok kanan atas menu navigasi utama.</li>
+            <li>Masuk menggunakan akun Google Anda pada panel yang tersedia.</li>
+            <li>Tunggu verifikasi sistem hingga muncul notifikasi sukses.</li>
+            <li>Anda akan diarahkan kembali ke halaman utama dengan fitur yang sudah terbuka.</li>
+        </ol>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="line-height: 2.0;">Cara Mencatat Transaksi</h3>
+        <ol style="text-align: left; padding-left: 40px; display: inline-block; line-height: 2.0;">
+            <li>Klik tombol transaksi yang terletak di bagian atas menu navigasi utama.</li>
+            <li>Masukkan data yang diminta di form transaksi sesuai keinginan.</li>
+            <li>Jika sudah, tekan tombol simpan untuk menyimpan transaksi.</li>
+            <li>Lihat daftar transaksi untuk melihat riwayat transaksi secara real-time.</li>
+            <li>Tekan tombol hapus jika ingin menghapus transaksi dari server pusat.</li>
+        </ol>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="line-height: 2.0;">Cara Logout</h3>
+        <ol style="text-align: left; padding-left: 40px; display: inline-block; line-height: 2.0;">
+            <li>Klik tombol profil yang terletak di bagian atas menu navigasi utama.</li>
+            <li>Tekan tombol logout yang ada di bagian bawah kartu profil.</li>
+            <li>Jika muncul keterangan konfirmasi, tekan OK.</li>
+            <li>Tunggu hingga proses logout selesai dan sistem mengunci kembali menu navigasi.</li>
+        </ol>
+    </div>
+</main>
+
+<footer>
+    <p>© <span id="tahun-footer">2026</span> LapaqPay Corporation</p>
+</footer>
+
+<script>
+   
+    fetch("https://worldtimeapi.org/api/timezone/Asia/Jakarta")
+        .then(response => {
+            if (!response.ok) throw new Error("Gagal mengambil data waktu server");
+            return response.json();
+        })
+        .then(data => {
+            // Contoh data.datetime: "2026-05-26T20:00:15..." -> ambil 4 digit pertama
+            const tahunServer = data.datetime.substring(0, 4);
+            document.getElementById("tahun-footer").textContent = tahunServer;
+        })
+        .catch(error => {
+            console.error("Error API Waktu:", error);
+            
+            document.getElementById("tahun-footer").textContent = new Date().getFullYear();
+        });
+</script>
+
+
+
+
+
+<script src="/script.js"></script>
+
+</body>
+</html>
