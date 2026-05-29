@@ -54,16 +54,28 @@
 </head>
 <body>
 
-<header>
+<header class="header">
     <div class="logo">
         <img src="https://i.imgur.com/pLK76Th.png" alt="LapaqPay">
         <h1>LapaqPay <span class="guest-badge">GUEST MODE</span></h1>
     </div>
+
+    <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
     <nav class="nav" id="navMenu">
         <ul>
-    <li><a href="/">Beranda</a></li>
-    <li><a href="/login/" style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 8px;">Login Admin</a></li>
-</ul>
+            <li><a href="/">Beranda</a></li>
+            <li>
+                <a href="/login/" 
+                   style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 8px;">
+                    Login Admin
+                </a>
+            </li>
+        </ul>
     </nav>
 </header>
 
@@ -246,6 +258,21 @@
             muatDataGuest(); // Segarkan tabel
         }
     }
+
+
+    
+</script>
+
+    <script>
+const hamburger = document.getElementById("hamburger");
+const navMenu = document.getElementById("navMenu");
+
+if (hamburger && navMenu) {
+    hamburger.addEventListener("click", () => {
+        hamburger.classList.toggle("active");
+        navMenu.classList.toggle("active");
+    });
+}
 </script>
 
 </body>
