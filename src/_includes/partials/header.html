@@ -38,3 +38,55 @@
     </nav>
 </header>
 
+
+
+<style>
+  
+    #profileMenu {
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #profileImg {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid rgba(255,255,255,0.15);
+        transition: 0.25s ease;
+    }
+
+    #profileImg:hover {
+        transform: scale(1.05);
+    }
+
+    
+
+  
+    .is-logged-in #profileMenu {
+        display: flex;
+    }
+
+    .is-logged-in #loginMenu {
+        display: none;
+    }
+
+  
+    .is-logged-out #profileMenu {
+        display: none;
+    }
+
+    .is-logged-out .auth {
+        display: none;
+    }
+
+
+    @media (max-width: 768px) {
+        #profileImg {
+            width: 30px;
+            height: 30px;
+        }
+    }
+</style>
