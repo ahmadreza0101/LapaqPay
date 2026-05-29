@@ -90,3 +90,58 @@
         }
     }
 </style>
+
+<style>
+
+
+    #profileMenu {
+        display: none;
+        margin-left: -8px; 
+    }
+
+    #profileImg {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid rgba(255,255,255,0.12);
+        transition: 0.25s ease;
+    }
+
+    #profileImg:hover {
+        transform: scale(1.05);
+    }
+
+
+    .is-logged-in #profileMenu {
+        display: flex;
+        align-items: center;
+    }
+
+    .is-logged-in #loginMenu {
+        display: none;
+    }
+
+   
+    .is-logged-out #profileMenu {
+        display: none !important;
+    }
+
+    .is-logged-out .auth {
+        display: none;
+    }
+
+  
+
+    @media (max-width: 768px) {
+        #profileMenu {
+            margin-left: -12px; 
+        }
+
+        #profileImg {
+            width: 28px;
+            height: 28px;
+        }
+    }
+</style>
